@@ -6,6 +6,7 @@ const days = document.querySelector('[data-days]');
 const hours = document.querySelector('[data-hours]');
 const minutes = document.querySelector('[data-minutes]');
 const second = document.querySelector('[data-seconds]');
+const inputEl = document.querySelector('#datetime-picker');
 startBtn.setAttribute('disabled', 'disabled')
 
 const now = () => new Date().getTime();
@@ -26,24 +27,29 @@ let result = flatpickr('input#datetime-picker', options);
 
 startBtn.addEventListener('click', goTimer);
 
-
 function goTimer() {
-    startBtn.setAttribute('disabled', 'disabled');
-    
-   return setInterval(() => {
-     let watches = convertMs(result.selectedDates[0].getTime() - now()); 
-     console.log(watches);
+  startBtn.setAttribute('disabled', 'disabled');
+  inputEl.setAttribute('disabled', 'disabled');
+  
+  const intervalId = setInterval(timer, 1000);
+     
+function timer() {
+  let watches = convertMs(result.selectedDates[0].getTime() - now()); 
+     if (watches.seconds < 0) {
+       inputEl.removeAttribute('disabled');
+       clearInterval(intervalId);
+       watches = convertMs(0);
+     };
      days.textContent = addLeadingZero(watches.days);
      hours.textContent = addLeadingZero(watches.hours);
      minutes.textContent = addLeadingZero(watches.minutes);
-     second.textContent = addLeadingZero(watches.seconds);
-     
- }, 1000);
+     second.textContent = addLeadingZero(watches.seconds);  
+   };
 };
- 
+   
 function addLeadingZero(value) {
   return value.toString().padStart(2, '0');
-}
+};
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -62,9 +68,8 @@ function convertMs(ms) {
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
   return { days, hours, minutes, seconds };
-}
+};
 
-toUpperCase();
 
  
 
